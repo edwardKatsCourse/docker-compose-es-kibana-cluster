@@ -1,4 +1,4 @@
-### Docker-Compose for Kibana and ElasticSearch Cluster
+## Docker-Compose for Kibana and ElasticSearch Cluster
 
 This `docker-compose` solves `bootstrap memory` errors and limits ElasticSearch memory usage to **1GB**/node  
  
