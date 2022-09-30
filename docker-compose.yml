@@ -1,0 +1,66 @@
+version: '2.3'
+
+services:
+  es01:
+    container_name: es01
+    image: ${DOCKER_ES_IMAGE}
+    environment:
+      - node.name=es01
+      - xpack.security.enabled=${ES_XPACK_SECURITY_ENABLED}
+      - discovery.seed_hosts=es02,es03
+      - bootstrap.memory_lock=${ES_BOOTSTRAP_MEMORY_LOCK}
+      - cluster.name=${ES_CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms${ES_HEAP_SIZE} -Xmx${ES_HEAP_SIZE}"
+    ports:
+      - "9201:9200"
+      - "9301:9300"
+    restart: always
+
+  es02:
+    container_name: es02
+    image: ${DOCKER_ES_IMAGE}
+    environment:
+      - node.name=es02
+      - xpack.security.enabled=${ES_XPACK_SECURITY_ENABLED}
+      - discovery.seed_hosts=es01,es03
+      - bootstrap.memory_lock=${ES_BOOTSTRAP_MEMORY_LOCK}
+      - cluster.name=${ES_CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms${ES_HEAP_SIZE} -Xmx${ES_HEAP_SIZE}"
+    ports:
+      - "9202:9200"
+      - "9302:9300"
+    restart: always
+
+  es03:
+    container_name: es03
+    image: ${DOCKER_ES_IMAGE}
+    environment:
+      - node.name=es03
+      - xpack.security.enabled=${ES_XPACK_SECURITY_ENABLED}
+      - discovery.seed_hosts=es01,es02
+      - bootstrap.memory_lock=${ES_BOOTSTRAP_MEMORY_LOCK}
+      - cluster.name=${ES_CLUSTER_NAME}
+      - cluster.initial_master_nodes=es01,es02,es03
+      - "ES_JAVA_OPTS=-Xms${ES_HEAP_SIZE} -Xmx${ES_HEAP_SIZE}"
+    ports:
+      - "9203:9200"
+      - "9303:9300"
+    restart: always
+
+  kb01:
+    container_name: kb01
+    depends_on:
+      - es01
+      - es02
+      - es03
+    image: docker.elastic.co/kibana/kibana:8.4.2
+    ports:
+      - "5601:5601"
+    restart: always
+    environment:
+      - ELASTICSEARCH_HOSTS=["http://es01:9200","http://es02:9200","http://es03:9200"]
+      - ELASTICSEARCH_USERNAME=${KIBANA_ES_USERNAME}
+      - SERVERNAME=${KIBANA_SERVERNAME}
+    mem_limit: 1g
