@@ -5,7 +5,13 @@ This `docker-compose` solves `bootstrap memory` errors and limits ElasticSearch 
 ## Helper Scripts
 
 ### Before Start
+1.  
 > sudo chmod a+x logs.sh run.sh stop.sh
+
+2.  
+#### Windows (https://stackoverflow.com/a/63882309)
+> wsl -d docker-desktop
+> sysctl -w vm.max_map_count=262144
 
 ### Start
 > ./run.sh
